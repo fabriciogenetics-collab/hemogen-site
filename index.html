@@ -823,180 +823,188 @@
   </footer>
 
   <script>
-    const STORAGE_KEY = "hemogen_biblioteca_artigos";
+   <script>
+  const STORAGE_KEY = "hemogen_biblioteca_artigos";
 
-    const defaultArticles = [
-      {
-        type: "Artigo",
-        title: "Importância da Hemovigilância na Segurança Transfusional",
-        description:
-          "Conteúdo técnico sobre como a hemovigilância fortalece a prevenção de falhas e a segurança do paciente em processos transfusionais."
-      },
-      {
-        type: "Pesquisa",
-        title: "Indicadores de desempenho em Agência Transfusional",
-        description:
-          "Exemplo de publicação voltada à análise de processos, rastreabilidade, qualidade e monitoramento de resultados assistenciais."
-      },
-      {
-        type: "Arquivo",
-        title: "Checklists, POPs e materiais técnicos",
-        description:
-          "Área dedicada a documentos, PDFs, apresentações e materiais institucionais que reforçam autoridade e organização técnica."
-      }
-    ];
+  const defaultArticles = [
+    {
+      type: "Artigo",
+      title: "Importância da Hemovigilância na Segurança Transfusional",
+      description:
+        "Conteúdo técnico sobre como a hemovigilância fortalece a prevenção de falhas e a segurança do paciente em processos transfusionais."
+    },
+    {
+      type: "Pesquisa",
+      title: "Indicadores de desempenho em Agência Transfusional",
+      description:
+        "Exemplo de publicação voltada à análise de processos, rastreabilidade, qualidade e monitoramento de resultados assistenciais."
+    },
+    {
+      type: "Arquivo",
+      title: "Checklists, POPs e materiais técnicos",
+      description:
+        "Área dedicada a documentos, PDFs, apresentações e materiais institucionais que reforçam autoridade e organização técnica."
+    }
+  ];
 
-    function loadArticles() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [...defaultArticles];
-      } catch (error) {
-        return [...defaultArticles];
-      }
+  let articles = [];
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    articles = saved ? JSON.parse(saved) : [...defaultArticles];
+  } catch (e) {
+    articles = [...defaultArticles];
+  }
+
+  const libraryGrid = document.getElementById("libraryGrid");
+  const adminList = document.getElementById("adminList");
+
+  const siteView = document.getElementById("siteView");
+  const adminView = document.getElementById("adminView");
+
+  const openAdminBtn = document.getElementById("openAdminBtn");
+  const closeAdminBtn = document.getElementById("closeAdminBtn");
+  const saveArticleBtn = document.getElementById("saveArticleBtn");
+  const resetArticlesBtn = document.getElementById("resetArticlesBtn");
+
+  const articleType = document.getElementById("articleType");
+  const articleTitle = document.getElementById("articleTitle");
+  const articleDescription = document.getElementById("articleDescription");
+
+  function persistArticles() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+  }
+
+  function renderLibrary() {
+    if (!libraryGrid) return;
+    libraryGrid.innerHTML = "";
+
+    if (!articles.length) {
+      libraryGrid.innerHTML = '<div class="admin-empty">Nenhum artigo cadastrado na biblioteca.</div>';
+      return;
     }
 
-    let articles = loadArticles();
+    articles.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "card library-card";
+      card.innerHTML = `
+        <div class="tag">${item.type}</div>
+        <h4>${item.title}</h4>
+        <p>${item.description}</p>
+        <div class="library-actions">
+          <span>Conteúdo HEMOGEN</span>
+          <span>Saiba mais</span>
+        </div>
+      `;
+      libraryGrid.appendChild(card);
+    });
+  }
 
-    const libraryGrid = document.getElementById("libraryGrid");
-    const adminList = document.getElementById("adminList");
+  function renderAdminList() {
+    if (!adminList) return;
+    adminList.innerHTML = "";
 
-    const siteView = document.getElementById("siteView");
-    const adminView = document.getElementById("adminView");
-
-    const openAdminBtn = document.getElementById("openAdminBtn");
-    const closeAdminBtn = document.getElementById("closeAdminBtn");
-    const saveArticleBtn = document.getElementById("saveArticleBtn");
-    const resetArticlesBtn = document.getElementById("resetArticlesBtn");
-
-    const articleType = document.getElementById("articleType");
-    const articleTitle = document.getElementById("articleTitle");
-    const articleDescription = document.getElementById("articleDescription");
-
-    function persistArticles() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+    if (!articles.length) {
+      adminList.innerHTML = '<div class="admin-empty">Nenhum conteúdo cadastrado no painel.</div>';
+      return;
     }
 
-    function renderLibrary() {
-      libraryGrid.innerHTML = "";
-
-      if (!articles.length) {
-        libraryGrid.innerHTML = '<div class="admin-empty">Nenhum artigo cadastrado na biblioteca.</div>';
-        return;
-      }
-
-      articles.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "card library-card";
-        card.innerHTML = `
+    articles.forEach((item, index) => {
+      const box = document.createElement("div");
+      box.className = "admin-list-item";
+      box.innerHTML = `
+        <div>
           <div class="tag">${item.type}</div>
           <h4>${item.title}</h4>
           <p>${item.description}</p>
-          <div class="library-actions">
-            <span>Conteúdo HEMOGEN</span>
-            <span>Saiba mais</span>
-          </div>
-        `;
-        libraryGrid.appendChild(card);
-      });
-    }
-
-    function renderAdminList() {
-      adminList.innerHTML = "";
-
-      if (!articles.length) {
-        adminList.innerHTML = '<div class="admin-empty">Nenhum conteúdo cadastrado no painel.</div>';
-        return;
-      }
-
-      articles.forEach((item, index) => {
-        const box = document.createElement("div");
-        box.className = "admin-list-item";
-        box.innerHTML = `
-          <div>
-            <div class="tag">${item.type}</div>
-            <h4>${item.title}</h4>
-            <p>${item.description}</p>
-          </div>
-          <div>
-            <button class="small-btn danger" onclick="deleteArticle(${index})">Excluir</button>
-          </div>
-        `;
-        adminList.appendChild(box);
-      });
-    }
-
-    function renderAll() {
-      renderLibrary();
-      renderAdminList();
-    }
-
-    function clearForm() {
-      articleType.value = "Artigo";
-      articleTitle.value = "";
-      articleDescription.value = "";
-    }
-
-    function openAdmin() {
-      siteView.classList.add("hidden");
-      adminView.classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function closeAdmin() {
-      adminView.classList.add("hidden");
-      siteView.classList.remove("hidden");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function saveArticle() {
-      const type = articleType.value.trim();
-      const title = articleTitle.value.trim();
-      const description = articleDescription.value.trim();
-
-      if (!title || !description) {
-        alert("Preencha o título e a descrição do artigo.");
-        return;
-      }
-
-      articles.unshift({ type, title, description });
-      persistArticles();
-      renderAll();
-      clearForm();
-      alert("Artigo salvo com sucesso.");
-    }
-
-    function resetArticles() {
-      const confirmed = confirm("Deseja restaurar a biblioteca padrão?");
-      if (!confirmed) return;
-
-      articles = [...defaultArticles];
-      persistArticles();
-      renderAll();
-      clearForm();
-    }
-
-    function deleteArticle(index) {
-      const confirmed = confirm("Deseja excluir este artigo?");
-      if (!confirmed) return;
-
-      articles.splice(index, 1);
-      persistArticles();
-      renderAll();
-    }
-
-    closeAdminBtn.addEventListener("click", closeAdmin);
-saveArticleBtn.addEventListener("click", saveArticle);
-resetArticlesBtn.addEventListener("click", resetArticles);
-
-openAdminBtn.addEventListener("click", function () {
-  const user = prompt("Usuário:");
-  const pass = prompt("Senha:");
-
-  if (user === "fabricio" && pass === "1234") {
-    openAdmin();
-  } else {
-    alert("Acesso negado");
+        </div>
+        <div>
+          <button class="small-btn danger" onclick="deleteArticle(${index})">Excluir</button>
+        </div>
+      `;
+      adminList.appendChild(box);
+    });
   }
-});
 
-renderAll();
+  function renderAll() {
+    renderLibrary();
+    renderAdminList();
+  }
+
+  function clearForm() {
+    if (articleType) articleType.value = "Artigo";
+    if (articleTitle) articleTitle.value = "";
+    if (articleDescription) articleDescription.value = "";
+  }
+
+  function openAdmin() {
+    if (!siteView || !adminView) {
+      alert("AdminView ou SiteView não encontrados no HTML.");
+      return;
+    }
+    siteView.style.display = "none";
+    adminView.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeAdmin() {
+    if (!siteView || !adminView) return;
+    adminView.style.display = "none";
+    siteView.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function saveArticle() {
+    const type = articleType.value.trim();
+    const title = articleTitle.value.trim();
+    const description = articleDescription.value.trim();
+
+    if (!title || !description) {
+      alert("Preencha o título e a descrição do artigo.");
+      return;
+    }
+
+    articles.unshift({ type, title, description });
+    persistArticles();
+    renderAll();
+    clearForm();
+    alert("Artigo salvo com sucesso.");
+  }
+
+  function resetArticles() {
+    const confirmed = confirm("Deseja restaurar a biblioteca padrão?");
+    if (!confirmed) return;
+
+    articles = [...defaultArticles];
+    persistArticles();
+    renderAll();
+    clearForm();
+  }
+
+  function deleteArticle(index) {
+    const confirmed = confirm("Deseja excluir este artigo?");
+    if (!confirmed) return;
+
+    articles.splice(index, 1);
+    persistArticles();
+    renderAll();
+  }
+
+  openAdminBtn.addEventListener("click", function () {
+    const user = prompt("Usuário:");
+    const pass = prompt("Senha:");
+
+    if (user === "fabricio" && pass === "1234") {
+      openAdmin();
+    } else {
+      alert("Acesso negado");
+    }
+  });
+
+  closeAdminBtn.addEventListener("click", closeAdmin);
+  saveArticleBtn.addEventListener("click", saveArticle);
+  resetArticlesBtn.addEventListener("click", resetArticles);
+
+  adminView.style.display = "none";
+  siteView.style.display = "block";
+  renderAll();
+</script>
