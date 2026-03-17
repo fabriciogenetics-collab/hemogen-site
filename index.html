@@ -642,7 +642,16 @@
         <a href="#contato">Contato</a>
       </nav>
 
-      <button class="admin-top-btn" id="openAdminBtn">Admin</button>
+      <button class="admin-top-btn" id="openAdminBtn.addEventListener("click", () => {
+  const user = prompt("Usuário:");
+  const pass = prompt("Senha:");
+
+  if (user === "fabricio" && pass === "1234") {
+    openAdmin();
+  } else {
+    alert("Acesso negado");
+  }
+});
     </div>
   </header>
 
