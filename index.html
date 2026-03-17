@@ -985,11 +985,10 @@
     }
 
     closeAdminBtn.addEventListener("click", closeAdmin);
-    saveArticleBtn.addEventListener("click", saveArticle);
-    resetArticlesBtn.addEventListener("click", resetArticles);
+saveArticleBtn.addEventListener("click", saveArticle);
+resetArticlesBtn.addEventListener("click", resetArticles);
 
-    renderAll();
- openAdminBtn.addEventListener("click", function () {
+openAdminBtn.addEventListener("click", function () {
   const user = prompt("Usuário:");
   const pass = prompt("Senha:");
 
@@ -999,5 +998,5 @@
     alert("Acesso negado");
   }
 });
-</body>
-</html>
+
+renderAll();
